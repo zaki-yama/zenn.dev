@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/zaki-yama/zenn.dev#readme",
   "dependencies": {
-    "zenn-cli": "^0.1.59"
+    "zenn-cli": "^0.1.79"
   },
   "devDependencies": {
     "textlint": "^11.7.6",
