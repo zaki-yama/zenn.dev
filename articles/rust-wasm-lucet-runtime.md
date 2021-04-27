@@ -380,3 +380,21 @@ thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: InvalidA
 
 **解決策💡**
 同上
+
+# 参考リンク
+- https://github.com/bytecodealliance/lucet
+  - リポジトリ
+- https://bytecodealliance.github.io/lucet/Overview.html
+  - 公式ドキュメント
+- https://docs.rs/lucet-runtime/0.6.1/lucet_runtime/
+  - lucet-runtime の仕様とか
+- [Announcing Lucet: Fastly’s native WebAssembly compiler and runtime | Fastly](https://www.fastly.com/blog/announcing-lucet-fastly-native-webassembly-compiler-runtime)
+  - ここにも使い方書いてるけど古い。公式ドキュメントの方を読んだほうがいい
+- [Rust で WASI 対応の WebAssembly を作成して実行 - なんとなくな Developer のメモ](https://fits.hatenablog.com/entry/2020/04/29/210734)
+- [WASMで様々なリソースにアクセス. How Lucet runs WebAssembly | by FUJITA Tomonori | nttlabs | Medium](https://medium.com/nttlabs/lucet-wasi-f93820c515f1)
+- [WebAssemblyランタイム比較(Lucet, Wasmer, Wasmtime)](https://zenn.dev/zaki_yama/scraps/cd40f7535b3224)
+  - 私のスクラップです。このあと Lucet 以外も試す予定です
+- [Cargoのワークスペース - The Rust Programming Language 日本語版](https://doc.rust-jp.rs/book-ja/ch14-03-cargo-workspaces.html)
+  - Cargo.toml の `members` ってなんじゃい、となったときに読んだ
+- [From and Into - Rust By Example](https://doc.rust-lang.org/stable/rust-by-example/conversion/from_into.html)
+  - lucet-runtime の引数と戻り値のキャストに関係して。まだちゃんと読んでない
