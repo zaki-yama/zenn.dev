@@ -8,13 +8,13 @@ published: false
 
 # はじめに
 
-[Lucet](https://github.com/bytecodealliance/lucet) は Fastly が開発している WebAssembly のコンパイラ & ランタイムです。
+Lucet は Fastly が開発している WebAssembly のコンパイラ & ランタイムです。
 https://github.com/bytecodealliance/lucet
 
 公式ドキュメント：
 https://bytecodealliance.github.io/lucet
 
-Lucet は WebAssembly ファイルを実行するための CLI に加え、Rust のプログラムから Lucet を利用できる [`lucet-runtime`](https://docs.rs/lucet-runtime) という ランタイム API も提供しています。
+Lucet は WebAssembly を実行するための CLI に加え、Rust のプログラムから Lucet を利用できる [`lucet-runtime`](https://docs.rs/lucet-runtime) という ランタイム API も提供しています。
 
 今回、この lucet-runtime を公式ドキュメントの通りに試したところ意外とハマるポイントが多かったことや、
 公式ドキュメントには WebAssembly にコンパイルするサンプルコードがC 言語で書かれたものしかなく「Rust で書くには？」と試行錯誤したため、備忘録的に手順をまとめておきます。
@@ -30,7 +30,7 @@ Lucet は WebAssembly ファイルを実行するための CLI に加え、Rust 
 
 # 前提：必要なものをインストール
 
-- Lucet 本体
+## Lucet 本体
 
 「[2.1. Compiling Lucet](https://bytecodealliance.github.io/lucet/Compiling.html)」に従い Lucet をローカル環境でコンパイルします。
 ドキュメントでは Linux と macOS でのインストール手順が記載されており、私は macOS でコンパイルしました。
@@ -43,7 +43,7 @@ Lucet は WebAssembly ファイルを実行するための CLI に加え、Rust 
 - 記事執筆時点での llvm の最新バージョンは 12 のため clang のパスは `/usr/local/opt/llvm/lib/clang/10*` ではなく `/usr/local/opt/llvm/lib/clang/12*` となる
 :::
 
-- Rust のビルドターゲット `wasm32-wasi`
+## Rust のビルドターゲット `wasm32-wasi`
 
 WASI に対応した WebAssembly ファイルにコンパイルするため、ビルドターゲットを追加しておきます。
 
@@ -57,13 +57,13 @@ $ rustup target add wasm32-wasi
 
 はじめに、WebAssembly ファイル作成用のパッケージを作成します。パッケージの置き場所、パッケージ名は自由に決めて大丈夫です。
 
-```zsh
+```bash
 $ cd ~/workspace
 $ cargo new example
 $ cd example
 ```
 
-`src/main.rs` の中身は、次のように `println!` だけの main 関数とします。
+`src/main.rs` の中身は、ここでは `println!` だけの main 関数とします。
 
 ```rust:src/main.rs
 fn main() {
@@ -73,7 +73,7 @@ fn main() {
 
 保存したら、このファイルをビルドします。その際、ターゲットに `wasm32-wasi` を指定します。
 
-```zsh
+```bash
 $ cargo build --target wasm32-wasi
 ```
 
@@ -180,7 +180,7 @@ fn main() {
 
 ドキュメントとは違う点が2箇所あります。
 
-- `(*1)` heap memory size の割り当て
+- `(*1)` heap memory size の変更
   - `&Limits::default()` のままだとエラーになるので、 `.with_heap_memory_size()` というメソッドを使用して割り当てるメモリサイズを変更する
   - 数値に根拠はないが、コードから [デフォルト値は `16 * 64 * 1024` だった](https://github.com/bytecodealliance/lucet/blob/51fb1ed414fe44f842db437d94abb6eb439d7c92/lucet-runtime/lucet-runtime-internals/src/alloc/mod.rs#L494) ので 100倍を指定している
 - `(*2)` 最後の行で `instance.run(...)` に渡す文字列は、 `"main"` ではなく `"_start"` が正しい
@@ -237,7 +237,6 @@ fn main() {
 ```rust:main.rs (WebAssembly にコンパイルする側)
 #[no_mangle]
 fn add(a: i32, b: i32) -> i32 {
-    println!("{}", a + b);
     return a + b;
 }
 ```
@@ -260,7 +259,7 @@ lucet-runtime を使う側では、`instance.run()` の第二引数で引数を�
 +        .run("add", &[5i32.into(), 3i32.into()])
 +        .unwrap()
 +        .unwrap_returned();
-+    println!("{}", i32::from(retval));
++    println!("{}", i32::from(retval)); // 8
 +}
 ```
 
