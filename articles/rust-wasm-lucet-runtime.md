@@ -3,7 +3,7 @@ title: "RustをWebAssemblyにコンパイルしてlucet-runtimeで動かす"
 emoji: "🚀"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["rust", "webassembly"]
-published: false
+published: true
 ---
 
 # はじめに
