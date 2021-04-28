@@ -19,14 +19,7 @@ Lucet は WebAssembly を実行するための CLI に加え、Rust のプログ
 今回、この lucet-runtime を公式ドキュメントの通りに試したところ意外とハマるポイントが多かったことや、
 公式ドキュメントには WebAssembly にコンパイルするサンプルコードがC 言語で書かれたものしかなく「Rust で書くには？」と試行錯誤したため、備忘録的に手順をまとめておきます。
 
-公式ドキュメントの該当箇所は
-- [2.2. Lucet "Hello World"](https://bytecodealliance.github.io/lucet/Your-first-Lucet-application.html)
-- [2.3. Using the Lucet runtime API from Rust](https://bytecodealliance.github.io/lucet/lucet-runtime-example.html)
-
-あたりです。
-
-また、Lucet のソースコードをコンパイルしたもので動作確認しましたが、記事執筆時点の最新コミットは [`51fb1ed
-`](https://github.com/bytecodealliance/lucet/tree/51fb1ed414fe44f842db437d94abb6eb439d7c92) です。
+Lucet のソースコードをコンパイルしたもので動作確認しましたが、記事執筆時点の最新コミットは [`51fb1ed`](https://github.com/bytecodealliance/lucet/tree/51fb1ed414fe44f842db437d94abb6eb439d7c92) です。
 
 # 前提：必要なものをインストール
 
@@ -386,6 +379,10 @@ thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: InvalidA
   - リポジトリ
 - https://bytecodealliance.github.io/lucet/Overview.html
   - 公式ドキュメント
+  - 該当箇所はこのあたり
+    - [2.1. Compiling Lucet](https://bytecodealliance.github.io/lucet/Compiling.html)
+    - [2.2. Lucet "Hello World"](https://bytecodealliance.github.io/lucet/Your-first-Lucet-application.html)
+    - [2.3. Using the Lucet runtime API from Rust](https://bytecodealliance.github.io/lucet/lucet-runtime-example.html)
 - https://docs.rs/lucet-runtime/0.6.1/lucet_runtime/
   - lucet-runtime の仕様とか
 - [Announcing Lucet: Fastly’s native WebAssembly compiler and runtime | Fastly](https://www.fastly.com/blog/announcing-lucet-fastly-native-webassembly-compiler-runtime)
