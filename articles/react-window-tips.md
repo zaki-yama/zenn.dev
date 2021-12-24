@@ -2,7 +2,7 @@
 title: "react-windowでこんなことできる？のまとめ"
 emoji: "🤔"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["react"]
+topics: ["react", "typescript"]
 published: true
 ---
 
