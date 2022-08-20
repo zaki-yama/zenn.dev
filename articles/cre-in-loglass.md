@@ -3,7 +3,7 @@ title: "ログラスでCREを立ち上げた背景とこれから"
 emoji: "🤝"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: ["cre"]
-published: false
+published: true
 ---
 
 [株式会社ログラス](https://www.loglass.jp/)　エンジニアの山﨑（[@zaki\_\_\_yama](https://twitter.com/zaki___yama)）です。
