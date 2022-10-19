@@ -46,7 +46,7 @@ https://github.com/zaki-yama/google-calendar-events-analyzer
 この Bot のメイン機能とも呼べる部分です。
 まず、Google カレンダーの予定を取得する処理については特にハードルはありませんでした。GAS なので Google の他サービスとの連携は簡単に行えます。
 今回で言えば、 `CalendarApp.getEventsForDay(targetDate)` を呼ぶだけで `targetDate` の予定を取得できます。
-あとは辞退した予定や週日予定などを除外してやれば OK です。
+あとは辞退した予定や終日予定などを除外してやれば OK です。
 
 ```javascript
 function fetchGoogleEvents(
@@ -68,17 +68,27 @@ function fetchGoogleEvents(
 
 そして、取得した予定の所要時間をカテゴリごとに集計する処理についてですが、
 当初はその処理をスクリプトで実装していたものの、途中から
-「あ、これスプレッドシートのピボットテーブルにやらせれば実装しなくて済むのでは？」
+**「あ、これスプレッドシートのピボットテーブルにやらせれば実装しなくて済むのでは？」**
 ということに気づき、スクリプトでは取得した予定にカテゴリ情報をくっつけてシートに保存するだけに留めました。
 
 ![](https://storage.googleapis.com/zenn-user-upload/7efc78ef158b-20221019.png)
+_こういう形式で予定のカテゴリ・タイトル・開始終了時刻を保存する_
 
 ![](https://storage.googleapis.com/zenn-user-upload/dac10b4608b5-20221019.png)
+_ピボットテーブルではこのように集計される_
 
 またその場合、他の人に使ってもらうことを考えるとピボットテーブルの作成などは自動化できると初期セットアップの手間としては望ましいです。
 が、そこについても「テンプレートとなるスプレッドシートを用意しておいて、コピーしてもらえばいいのでは？」という発想になり、特にスクリプトでの実装は不要としました。
 
 ## グラフを Slack に投稿する
+
+Slack にテキストメッセージを投稿するだけであれば、 Incoming Webhooks を使えば実現できます。
+[Sending messages using Incoming Webhooks | Slack](https://api.slack.com/messaging/webhooks#advanced_message_formatting)
+
+が、これには画像を投稿する機能はありません。画像を投稿するには `files.upload` API を使います。
+[files.upload method | Slack](https://api.slack.com/methods/files.upload)
+
+Incoming Webhooks は Webhook URL があれば投稿できますが、 `files.upload` は token が必要です。結果として両方とも入力してもらう形になってしまった。。。
 
 ## グラフ範囲を GAS で更新する
 
