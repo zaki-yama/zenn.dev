@@ -118,9 +118,26 @@ sheet.updateChart(
 `addRange(range)` は文字通りデータ範囲を「追加」するため、先に `clearRanges()` で現在のデータ範囲をクリアします。
 また `addRange(range)` は複数回適用できるので、これによってヘッダー行と実際のデータを含む行を順番に追加しています。
 
-もう 1 点。細かいところで、ピボットテーブルには「総計」列を表示するオプションがありますが、この列はグラフには含めたくありません。
-このやり方は以前個人ブログの方に書いたのでよければご覧ください。
-[スプレッドシートのピボットテーブルで「総計を表示」しているかどうかを GAS で判定する - dackdive's blog](https://dackdive.hateblo.jp/entry/2022/09/21/092257)
+もう 1 点、めちゃくちゃ細かいところですが、ピボットテーブルには「総計」列を表示するオプションがあります。
+
+![](https://storage.googleapis.com/zenn-user-upload/e13f40231c22-20221020.png)
+
+この列が表示されていたとしても、グラフには含めたくありません。
+そのため、 [`PivotGroup` クラスの `totalsAreShown` メソッド](https://developers.google.com/apps-script/reference/spreadsheet/pivot-group#totalsareshown) を使って総計列を表示しているかどうか判定し、データ範囲の列方向を調整しています。
+
+```typescript
+const lastColumn = sheet.getLastColumn();
+console.log("lastColumn", lastColumn);
+
+const pivotTables = sheet.getPivotTables();
+const pivotTable = pivotTables[0];
+const pivotGroups = pivotTable.getColumnGroups();
+const totalsAreShown = pivotGroups[0].totalsAreShown();
+
+const numColumns = totalsAreShown ? lastColumn - 1 : lastColumn;
+```
+
+参考: [スプレッドシートのピボットテーブルで「総計を表示」しているかどうかを GAS で判定する - dackdive's blog](https://dackdive.hateblo.jp/entry/2022/09/21/092257)
 
 ## 入力用のフォームダイアログ
 
