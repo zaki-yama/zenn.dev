@@ -3,6 +3,7 @@ title: "ログラスでCREを立ち上げた背景とこれから"
 emoji: "🤝"
 type: "idea" # tech: 技術記事 / idea: アイデア
 topics: ["cre"]
+publication_name: "loglass"
 published: true
 ---
 
