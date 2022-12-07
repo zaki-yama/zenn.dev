@@ -168,6 +168,6 @@ https://twitter.com/DivDev_/status/1564224097390940163?s=20&t=xlG7p6vwwLmE7mxsGr
 # おわりに
 
 個人的にここ 1,2 年ぐらいで見聞きした VRT ライブラリをいくつか紹介しました。
-余談ですが、調べる過程でこのトピック単体で Awesome 系リポジトリがあることを知ったのですが、こちらについては全然見れませんでした。。。
+余談ですが、調べる過程で VRT というテーマ単体で Awesome リポジトリがあることを知りました。こちらについては全然見れませんでした。。。
 
 https://github.com/mojoaxel/awesome-regression-testing
