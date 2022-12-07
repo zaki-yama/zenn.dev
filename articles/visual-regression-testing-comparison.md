@@ -109,6 +109,8 @@ test("example test", async ({ page }) => {
 
 差分比較結果は先に紹介した reg-suit や Chromatic と似ています。
 
+![](https://storage.googleapis.com/zenn-user-upload/3132a4b754e3-20221208.gif)
+
 主な特徴としては次の通りです。
 
 - 画面をキャプチャするためのメソッドが提供されているので導入は楽
