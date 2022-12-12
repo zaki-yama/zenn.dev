@@ -29,13 +29,21 @@ https://github.com/zaki-yama-labs/visual-regression-testing-comparison
 
 # 1. reg-suit + Storycap
 
+https://github.com/reg-viz/reg-suit
+
 個人的には現在もっとも普及しているのがこれかなと思います。
 各社のテックブログでの事例紹介記事が多数見つかります。
 
-https://github.com/reg-viz/reg-suit
+- [Visual Regression Testing で安心できるフロントエンド環境を作る - Sansan Tech Blog](https://buildersbox.corp-sansan.com/entry/2021/03/18/110000)
+- [Visual Regression Testing はじめました – 具体的な運用 Tips – PSYENCE:MEDIA](https://blog.recruit.co.jp/rmp/front-end/visual-regression-testing/)
+- [ABEMA でスナップショットテストをやめて Visual Regression Testing に移行する話 | CyberAgent Developers Blog](https://developers.cyberagent.co.jp/blog/archives/29784/)
 
 [reg-suit](https://github.com/reg-viz/reg-suit) は画像の差分検出を行う CLI で、これ自体に画像を保存する機能はありません。
 そこで合わせて使われることが多いのが [Storycap](https://github.com/reg-viz/storycap) です。Storycap は Storybook の内容を画像として保存してくれる Storybook Addon です。
+
+:::message
+reg-suit に画像を保存する機能はないので、言い換えると Storycap 以外のツールと組み合わせれば Storybook に依存しない形での VRT が可能です。
+:::
 
 reg-suit を使うと、差分比較結果をこのようなレポート画面で確認できます。
 
@@ -85,6 +93,8 @@ _セットアップは管理画面でリポジトリを選択し、その後の�
 ![](https://storage.googleapis.com/zenn-user-upload/ad2b13c4af23-20221208.gif)
 _差分を見ながら Accept をポチポチ押してチェックを完了させる体験は良い_
 
+気になる料金については [Pricing](https://www.chromatic.com/pricing) に記載されています。Free プランでも月 5000 スナップショットまでは使えるようです。
+
 # 3. Playwright
 
 [Playwright](https://github.com/microsoft/playwright) は Microsoft が開発しているブラウザ自動操作ライブラリです。
@@ -120,7 +130,7 @@ test("example test", async ({ page }) => {
 私も本記事を書くにあたって初めて試してみたのですが、テストが簡単に書けるのに加え `init` コマンドの流れで GitHub Actions の設定ファイルを自動的に作成してくれるなどの体験は良かったです。
 一方、CI で実行する場合、差分が検出されてもすぐに目視で確認する術がなく、artifacts にアップロードしたレポートを手元にダウンロードして確認する感じになるため、先に紹介した 2 つのツールと比べると体験としては劣るのかな、という感想を持ちました。
 
-# 4. Playwright の Component Tests (experimental)
+# 4. Playwright のコンポーネント単位のテスト（experimental）
 
 1 つ前で紹介した Playwright ですが、v1.22 から experimental な機能としてコンポーネント単位のテスト機能が提供されています。
 
@@ -167,7 +177,30 @@ https://twitter.com/DivDev_/status/1564224097390940163?s=20&t=xlG7p6vwwLmE7mxsGr
 
 # おわりに
 
-個人的にここ 1,2 年ぐらいで見聞きした VRT ライブラリをいくつか紹介しました。
+ここ 1,2 年ぐらいで見聞きした VRT ライブラリをいくつか紹介しました。
+あくまで個人的なおすすめですが、セットアップの手間や差分確認のしやすさ、世に出ている情報の多さなどを考慮すると
+今プロダクションに導入するなら引き続き reg-suit + Storycap かなと思いました。
+ただ Storybook を導入していることが前提にはなってしまうので、そういう意味では Playwright のコンポーネント単位のテストは非常に可能性を感じます。
+
 余談ですが、調べる過程で VRT というテーマ単体で Awesome リポジトリがあることを知りました。こちらについては全然見れませんでした。。。
 
 https://github.com/mojoaxel/awesome-regression-testing
+
+# 参考リンク
+
+- reg-suit & Storycap
+  - https://github.com/reg-viz/reg-suit
+  - https://github.com/reg-viz/storycap
+  - [Visual Regression Testing で安心できるフロントエンド環境を作る - Sansan Tech Blog](https://buildersbox.corp-sansan.com/entry/2021/03/18/110000)
+  - [Visual Regression Testing はじめました – 具体的な運用 Tips – PSYENCE:MEDIA](https://blog.recruit.co.jp/rmp/front-end/visual-regression-testing/)
+  - [ABEMA でスナップショットテストをやめて Visual Regression Testing に移行する話 | CyberAgent Developers Blog](https://developers.cyberagent.co.jp/blog/archives/29784/)
+- Chromatic
+  - https://www.chromatic.com/
+  - [Pairs ブラウザ版でページ丸ごと Visual Regression Test したらすごいコスパ良かった | by Hiroshi Ohsuga | Eureka Engineering | Medium](https://medium.com/eureka-engineering/pairs%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E7%89%88%E3%81%A7%E3%83%9A%E3%83%BC%E3%82%B8%E4%B8%B8%E3%81%94%E3%81%A8visual-regression-test%E3%81%97%E3%81%9F%E3%82%89%E3%82%84%E3%81%A3%E3%81%B1%E3%82%8A%E3%82%B3%E3%82%B9%E3%83%91%E8%89%AF%E3%81%8B%E3%81%A3%E3%81%9F-726ad2352ace)
+- Playwright
+  - [Visual comparisons | Playwright](https://playwright.dev/docs/next/test-snapshots)
+  - [Automating visual UI tests with Playwright and GitHub Actions · mmazzarolo.com](https://mmazzarolo.com/blog/2022-09-09-visual-regression-testing-with-playwright-and-github-actions/)
+  - [Playwright & Vite ではじめる脱レガシー向け軽量 Visual Regression Test - Cybozu Inside Out | サイボウズエンジニアのブログ](https://blog.cybozu.io/entry/2022/03/18/100000)
+  - [Playwright でフロントエンドの E2E テストを自動化してみた話](https://zenn.dev/mikana0918/articles/b6eb66377fb25a)
+- lost-pixel
+  - https://github.com/lost-pixel/lost-pixel
