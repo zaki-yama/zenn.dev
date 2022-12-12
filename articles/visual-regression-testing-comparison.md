@@ -4,7 +4,7 @@ emoji: "🔍"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["フロントエンド", "vrt"]
 publication_name: "loglass"
-published: false
+published: true
 ---
 
 ![](https://storage.googleapis.com/zenn-user-upload/b74f3f1447ad-20221208.png)
