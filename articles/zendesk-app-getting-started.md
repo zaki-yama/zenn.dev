@@ -8,19 +8,32 @@ published: false
 ---
 
 :::message
-この記事は[毎週必ず記事がでるテックブログ "Loglass Tech Blog Sprint"](https://zenn.dev/loglass/articles/7298a3cd4c5fc6) の **X 週目**の記事です！
-1 年間連続達成まで **残り XX 週** となりました！
+この記事は[毎週必ず記事がでるテックブログ "Loglass Tech Blog Sprint"](https://zenn.dev/loglass/articles/7298a3cd4c5fc6) の **11 週目**の記事です！
+1 年間連続達成まで **残り 42 週** となりました！
 :::
 
-こんにちは。[株式会社ログラス](https://www.loglass.jp/) で CRE（Customer Reliability Engineer）をやっている山﨑（[@zaki\_\_\_yama](https://twitter.com/zaki___yama)）です。
+[株式会社ログラス](https://www.loglass.jp/) CRE（Customer Reliability Engineer）の [@zaki\_\_\_yama](https://twitter.com/zaki___yama) です。
 
 CRE としての取り組みの 1 つとして、ここ半年ぐらいはカスタマーサポート体制の立ち上げ、および自身もお客様からの問い合わせ対応をしながら業務プロセスの改善を進めてきました。
-弊社では問い合わせ対応に Zendesk (https://www.zendesk.co.jp/) を使用しています。Zendesk には [Zendesk Apps](https://developer.zendesk.com/documentation/apps/) と呼ばれる、Zendesk の標準機能を拡張する仕組みが備わっています。（Chrome 拡張のようなイメージです）
-将来的に業務改善につながられるのでは？と思い、具体的にどういった開発体験になるのか、何ができるのかを調査したため、その結果をまとめます。
+弊社では問い合わせ対応に Zendesk (https://www.zendesk.co.jp/) を使用しています。Zendesk には [Zendesk アプリ](https://developer.zendesk.com/documentation/apps/) と呼ばれる、Zendesk のインターフェースを拡張する仕組みが備わっています。（Chrome 拡張のようなイメージです）
+これで何か業務改善につながられるのでは？という興味から、具体的に何ができるのか、どういった開発体験なのかを最近調べていたため、本記事でご紹介します。
 
-# 基本編
+# Zendesk アプリの概要
 
-基本編では、基本となるアプリ開発の一連の手順を理解します。
+上述したように、Zendesk アプリは Zendesk の標準のインターフェースを拡張・強化する仕組みです。
+参考：[トップレベルのアプリを使って Zendesk を機能拡張 （Zendesk ヘルプ）](https://support.zendesk.com/hc/ja/articles/4408829182234-%E3%83%88%E3%83%83%E3%83%97%E3%83%AC%E3%83%99%E3%83%AB%E3%81%AE%E3%82%A2%E3%83%97%E3%83%AA%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6Zendesk%E3%82%92%E6%A9%9F%E8%83%BD%E6%8B%A1%E5%BC%B5)
+
+たとえば以下の画像では Zendesk が公式で提供している[Salesforce 連携用のアプリ](https://www.zendesk.com/marketplace/apps/support/10/salesforce/?queryID=bb12f4add09246735b777d674bd34623) をインストールしており、Zendesk の問い合わせユーザーにひもづく Salesforce の情報をチケット横に表示しています。
+
+![](https://storage.googleapis.com/zenn-user-upload/a2f66599023c-20231026.png)
+
+また、今回はアプリの「開発」に主眼を置いていますが、他者が開発したアプリを簡単にインストールできる独自のマーケットプレイスも備わっています。
+
+https://www.zendesk.com/marketplace/apps/
+
+# 基本的な開発フロー
+
+ここからは実際に手を動かしながら、アプリの基本的な開発フローについて学んでいきます。
 
 ## 開発アカウントの取得
 
@@ -127,7 +140,7 @@ Add ?zcli_apps=true to the end of your Zendesk URL to load these apps on your Ze
 
 ローカルサーバーが起動します。
 
-コンソールに表示されているように、この状態で Zendesk のアカウントにログインし、Support のチケット URL の後ろに `?zcli_apps=true` をつけてアクセスします。
+コンソールに表示されているように、この状態で Zendesk のアカウントにログインし、Support 画面のチケット URL の後ろに `?zcli_apps=true` をつけてアクセスします。
 （URL は https://d3v-\*\*\*.zendesk.com/agent/tickets/1?zcli_apps=true のようになるはずです）
 
 ![](https://storage.googleapis.com/zenn-user-upload/06a9745b9a41-20231025.png)
@@ -136,7 +149,6 @@ Add ?zcli_apps=true to the end of your Zendesk URL to load these apps on your Ze
 
 ## パッケージングとデプロイ
 
-`zcli apps:server` コマンドによってローカル開発が可能であることがわかりました。
 最後に、アプリを Zendesk にデプロイします。
 それには `zcli apps:create` コマンドおよび `zcli apps:update` コマンドを使います。
 
@@ -170,16 +182,61 @@ $ cat zcli.apps.config.json
 中には `app_id` のみ記載されており、この ID でアプリを一意に識別します。
 初回のデプロイ以降、アプリを更新したい場合は `zcli apps:update` コマンドを使用します。
 
-# 応用編
+# マニフェストファイル（manifest.json）について
 
-## Zendesk Apps framework (ZAF) を使った Zendesk リソースの操作
+`zcli apps:new` によって生成されたディレクトリの中身を見ると、 `manifest.json` というファイルがあるのがわかります。
+アプリに関する設定情報はこのマニフェストファイルに記載します。
 
-## Zendesk Garden を使った UI 開発
+すべてのプロパティについては触れませんが、そのうちの 1 つに　`location` というプロパティがあります。
 
-## 外部 API へのリクエスト
+```json
+"location": {
+  "support": {
+    "ticket_sidebar": {
+      "url": "assets/iframe.html",
+      "flexible": true
+    }
+  }
+},
+```
 
-## React を使う
+`location` のすぐ下に `support` が指定されていますが、これは問い合わせ管理用の Zendesk Support 以外に、Chat や Sell といった機能でもアプリを利用できるため、どの機能で使用するかを設定しています。
+またその下には `ticket_sidebar` というプロパティがありますが、これにより画面のどこにアプリを表示するか？を設定しています。
+
+`ticket_sidebar` 以外に取りうる値や、画面のどこに表示できるのか？については
+[Introduction | Zendesk Developer Docs](https://developer.zendesk.com/api-reference/apps/apps-support-api/introduction/)
+の画像がわかりやすいです。
+
+![](https://storage.googleapis.com/zenn-user-upload/75daca2cc54a-20231026.png)
+
+（上記公式ドキュメントより引用）
+
+最後に
+
+```json
+"url": "assets/iframe.html"
+```
+
+がありますが、ここでアプリとして表示する HTML ファイルの場所を指定しています。
+
+manifest.json のその他のプロパティについては、公式ドキュメントの
+[Manifest reference](https://developer.zendesk.com/documentation/apps/app-developer-guide/manifest/)
+を参照してください。
+
+# まとめ
+
+本記事では Zendesk アプリの概要と、基本的な開発フローについて紹介しました。
+アプリの開発フローは基本的にはすべて専用の CLI で完結します。よく使うコマンドをまとめておきます。
+
+| コマンド                                 | 役割                 |
+| :--------------------------------------- | :------------------- |
+| `zcli apps:new`                          | アプリの雛形作成     |
+| `zcli apps:server`                       | ローカルサーバー起動 |
+| `zcli apps:create` or `zcli apps:update` | アプリのデプロイ     |
 
 # リファレンス
 
-- [zendesk/zcli: A command-line tool for Zendesk](https://github.com/zendesk/zcli) （GitHub リポジトリ）
+- [Zendesk app quick start | Zendesk Developer Docs](https://developer.zendesk.com/documentation/apps/getting-started/zendesk-app-quick-start/)
+- [Using ZCLI | Zendesk Developer Docs](https://developer.zendesk.com/documentation/apps/getting-started/using-zcli/)
+- [Manifest reference | Zendesk Developer Docs](https://developer.zendesk.com/documentation/apps/app-developer-guide/manifest/)
+- [zendesk/zcli: A command-line tool for Zendesk](https://github.com/zendesk/zcli)
