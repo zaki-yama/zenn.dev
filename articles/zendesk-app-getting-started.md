@@ -14,9 +14,13 @@ published: false
 
 [株式会社ログラス](https://www.loglass.jp/) CRE（Customer Reliability Engineer）の [@zaki\_\_\_yama](https://twitter.com/zaki___yama) です。
 
-CRE としての取り組みの 1 つとして、ここ半年ぐらいはカスタマーサポート体制の立ち上げ、および自身もお客様からの問い合わせ対応をしながら業務プロセスの改善を進めてきました。
+CRE としての取り組みの 1 つとして、ここ半年ぐらいカスタマーサポート体制の立ち上げ、および自身もお客様からの問い合わせ対応をしながら業務プロセスの改善を進めてきました。
 弊社では問い合わせ対応に Zendesk (https://www.zendesk.co.jp/) を使用しています。Zendesk には [Zendesk アプリ](https://developer.zendesk.com/documentation/apps/) と呼ばれる、Zendesk のインターフェースを拡張する仕組みが備わっています。（Chrome 拡張のようなイメージです）
 これで何か業務改善につながられるのでは？という興味から、具体的に何ができるのか、どういった開発体験なのかを最近調べていたため、本記事でご紹介します。
+
+# 本記事の対象読者
+
+Zendesk アプリでできることが知りたい、また Zendesk アプリを開発してみたいという開発者の方。
 
 # Zendesk アプリの概要
 
@@ -222,6 +226,17 @@ $ cat zcli.apps.config.json
 manifest.json のその他のプロパティについては、公式ドキュメントの
 [Manifest reference](https://developer.zendesk.com/documentation/apps/app-developer-guide/manifest/)
 を参照してください。
+
+# 応用編: OpenAI API 　を使ったサンプルアプリの開発
+
+前半部分でアプリ開発の基本的なフローについて紹介しました。
+後半では、先ほど作成した雛形からスタートしてサンプルとなるアプリを開発しながら、Zendesk アプリにおいて重要と思われる概念を紹介します。
+
+## サンプルアプリで作るもの
+
+## Zendesk App Framework (ZAF) を使った Zendesk リソースへのアクセス
+
+##
 
 # まとめ
 
