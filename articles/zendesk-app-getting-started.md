@@ -1,5 +1,5 @@
 ---
-title: "Zendeskアプリ開発ことはじめ"
+title: "Zendeskアプリ開発ことはじめ（前編）"
 emoji: "🛠️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["zendesk"]
@@ -12,11 +12,18 @@ published: false
 1 年間連続達成まで **残り 42 週** となりました！
 :::
 
-[株式会社ログラス](https://www.loglass.jp/) CRE（Customer Reliability Engineer）の [@zaki\_\_\_yama](https://twitter.com/zaki___yama) です。
+株式会社ログラス CRE（Customer Reliability Engineer）の [@zaki\_\_\_yama](https://twitter.com/zaki___yama) です。
 
-CRE としての取り組みの 1 つとして、ここ半年ぐらいはカスタマーサポート体制の立ち上げ、および自身もお客様からの問い合わせ対応をしながら業務プロセスの改善を進めてきました。
+CRE としての取り組みの 1 つとして、ここ半年ぐらいカスタマーサポート体制の立ち上げ、および自身もお客様からの問い合わせ対応をしながら業務プロセスの改善を進めてきました。
 弊社では問い合わせ対応に Zendesk (https://www.zendesk.co.jp/) を使用しています。Zendesk には [Zendesk アプリ](https://developer.zendesk.com/documentation/apps/) と呼ばれる、Zendesk のインターフェースを拡張する仕組みが備わっています。（Chrome 拡張のようなイメージです）
 これで何か業務改善につながられるのでは？という興味から、具体的に何ができるのか、どういった開発体験なのかを最近調べていたため、本記事でご紹介します。
+
+Zendesk アプリは公式ドキュメントは充実していますが日本語のまとまった情報はまだそれほど見受けられないため、私と同じようにこれから Zendesk アプリ開発に手を出そうとしている人にとって有益な情報になれば幸いです。
+
+# 本記事の構成
+
+前編・後編の 2 つの記事で構成する予定です。
+前編となる本記事では、Zendesk アプリの概要と、CLI を用いた基本的な開発フローについて説明します。
 
 # Zendesk アプリの概要
 
