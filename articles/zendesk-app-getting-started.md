@@ -18,7 +18,7 @@ CRE としての取り組みの 1 つとして、ここ半年ぐらいカスタ�
 弊社では問い合わせ対応に Zendesk (https://www.zendesk.co.jp/) を使用しています。Zendesk には [Zendesk アプリ](https://developer.zendesk.com/documentation/apps/) と呼ばれる、Zendesk のインターフェースを拡張する仕組みが備わっています。（Chrome 拡張のようなイメージです）
 これで何か業務改善につながられるのでは？という興味から、具体的に何ができるのか、どういった開発体験なのかを最近調べていたため、本記事でご紹介します。
 
-Zendesk アプリは公式ドキュメントは充実していますが日本語のまとまった情報はまだそれほど見受けられないため、私と同じようにこれから Zendesk アプリ開発に手を出そうとしている人にとって有益な情報になれば幸いです。
+Zendesk アプリは英語の[公式ドキュメント](https://developer.zendesk.com/documentation/apps/getting-started/overview/)は非常に充実していますが、日本語のまとまった情報はまだそれほど多くないため、私と同じようにこれから Zendesk アプリ開発を始めてみようという方にとって有益な情報になれば幸いです。
 
 # 本記事の構成
 
