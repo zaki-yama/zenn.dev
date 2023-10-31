@@ -4,7 +4,7 @@ emoji: "🛠️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["zendesk"]
 publication_name: "loglass"
-published: false
+published: true
 ---
 
 :::message
