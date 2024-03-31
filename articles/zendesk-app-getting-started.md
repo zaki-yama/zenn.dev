@@ -94,13 +94,15 @@ $ zcli login -i
 ```
 
 を実行すると Zendesk のサブドメイン名、メールアドレス等が要求されるので入力します。
+ここで、パスワードではなく API トークンを使用する場合、メールアドレスには末尾に `/token` をつけ、パスワードの代わりに API トークンを入力します。
+
 ログインが完了すると `zcli profiles:list` で認証済みアカウントの一覧が確認できます。
 
 ```bash
 $ zcli profiles:list
  Accounts
  ───────────────────────
- d3v-zaki-yama <= active
+ zaki-yama <= active
 ```
 
 なお、上記がプロファイルを使った方法で、別途環境変数を使った認証方法もあります。
@@ -148,7 +150,7 @@ Add ?zcli_apps=true to the end of your Zendesk URL to load these apps on your Ze
 ローカルサーバーが起動します。
 
 コンソールに表示されているように、この状態で Zendesk のアカウントにログインし、Support 画面のチケット URL の後ろに `?zcli_apps=true` をつけてアクセスします。
-（URL は https://d3v-\*\*\*.zendesk.com/agent/tickets/1?zcli_apps=true のようになるはずです）
+（URL は https://\*\*\*.zendesk.com/agent/tickets/1?zcli_apps=true のようになるはずです）
 
 ![](https://storage.googleapis.com/zenn-user-upload/06a9745b9a41-20231025.png)
 
