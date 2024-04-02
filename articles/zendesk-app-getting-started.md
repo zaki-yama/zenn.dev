@@ -238,7 +238,7 @@ manifest.json のその他のプロパティについては、公式ドキュメ
 | `zcli apps:server`                       | ローカルサーバー起動 |
 | `zcli apps:create` or `zcli apps:update` | アプリのデプロイ     |
 
-# リファレンス
+# 参考リンク
 
 - [Zendesk app quick start | Zendesk Developer Docs](https://developer.zendesk.com/documentation/apps/getting-started/zendesk-app-quick-start/)
 - [Using ZCLI | Zendesk Developer Docs](https://developer.zendesk.com/documentation/apps/getting-started/using-zcli/)
