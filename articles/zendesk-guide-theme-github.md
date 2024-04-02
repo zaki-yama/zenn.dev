@@ -25,9 +25,9 @@ published: false
 Guide の記事そのものを GitHub で管理する機能は Zendesk が提供していないため、本記事でも触れていません。
 :::
 
-# GitHub 連携をはじめる手順
+## GitHub 連携をはじめる手順
 
-## GitHub リポジトリにテーマを準備する
+### GitHub リポジトリにテーマを準備する
 
 まずは、管理対象となる GitHub リポジトリを作成し、テーマを準備します。
 Guide のテーマ管理画面（`https://***.zendesk.com/theming/workbench`）にアクセスし、管理したいテーマのメニューから「ダウンロード」を実行します。
@@ -43,7 +43,7 @@ https://github.com/zendesk/copenhagen_theme
 このリポジトリを fork して始めるという方法もあります。
 ただし、CI やビルド関連など、テンプレートそのものには必要ないファイルも含まれています。
 
-## Zendesk で GitHub 連携を設定する
+### Zendesk で GitHub 連携を設定する
 
 準備したリポジトリを Zendesk と連携します。
 Guide のテーマ管理画面から「テーマを追加」>「GitHub から追加」を選択します。
@@ -57,7 +57,7 @@ Guide のテーマ管理画面から「テーマを追加」>「GitHub から追
 成功すると、テーマライブラリにテーマが追加されます。
 これで、テーマを GitHub リポジトリ上でカスタマイズする準備が整いました。
 
-## ローカル環境でテーマ変更をプレビューする
+### ローカル環境でテーマ変更をプレビューする
 
 [Zendesk CLI（ZCLI）](https://developer.zendesk.com/documentation/apps/getting-started/using-zcli/) を使うと、ローカルでファイルを変更した結果を Zendesk Guide 上でプレビューできます。
 ZCLI については以前別の記事でも紹介したので、こちらの記事のインストールおよび認証の項を参考にしてください。
@@ -83,7 +83,7 @@ You can exit preview mode in the UI or by visiting https://zaki-yama.zendesk.com
 ![](https://storage.googleapis.com/zenn-user-upload/f70cd74e3ca4-20240401.gif)
 _例：style.css を編集してボタンの色を変える_
 
-## 変更をリリースする
+### 変更をリリースする
 
 ローカルでの変更が完了したら、変更内容を Guide の設定にも反映します。
 まず、テーマに含まれているマニフェストファイル（`manifest.json`）内のバージョン番号を更新します。
@@ -114,18 +114,18 @@ _例：style.css を編集してボタンの色を変える_
 
 以上で、テーマを GitHub で管理する一連の流れを紹介しました。
 
-# GitHub 管理にするメリット・デメリット
+## GitHub 管理にするメリット・デメリット
 
 テーマを GitHub で管理するメリットとして、変更履歴や差分を容易に確認できる点や、Pull Request を使ったレビューフローを構築できる点などが挙げられます。
 また、JS や CSS ファイルに関しては、ライブラリやビルドツールを使うことができる点もメリットとしてあるでしょう。
 たとえば公式の [Copenhagen テーマのリポジトリ](https://github.com/zendesk/copenhagen_theme) を見ると、JS や CSS のコンパイルに rollup や Sass を使用しています。
 
-反面、デメリットとしては、ちょっとした修正であっても GitHub 経由で行わなければならないため、git や GitHub に習熟していないメンバーにはやや敷居が高いと感じるでしょう。このあたりは Guide を管理するメンバーのスキルセットやチームの規模感によってどちらが適しているか変わってきそうです。
-また、手順の中でも触れましたが、変更を適用するために毎回必ずマニフェストのバージョンを上げない点はちょっとだけ注意が必要だなと感じました。
+反面、デメリットとしては、ちょっとした修正であっても GitHub 経由で行わなければならないため、git や GitHub に習熟していないメンバーはやや敷居が高いと感じるでしょう。このあたりは Guide を管理するメンバーのスキルセットやチームの規模感によってどちらが適しているか変わってきそうです。
+また、手順の中でも触れましたが、変更をリリースするために毎回必ずマニフェストのバージョンを上げない点はちょっと使いにくさを感じました。
 
-# Tips
+## Tips
 
-## マニフェストファイル　（`manifest.json`）の中身
+### マニフェストファイル　（`manifest.json`）の中身
 
 テーマに含まれるマニフェストファイル（`manifest.json`）について補足します。
 `manifest.json` は次の表に示すプロパティを持ちます。
@@ -225,7 +225,7 @@ _例：style.css を編集してボタンの色を変える_
 [テーマの「設定」パネルのカスタマイズ](https://support.zendesk.com/hc/ja/articles/4408846524954-テーマの-設定-パネルのカスタマイズ)
 をご参照ください。
 
-## 更新時の「テーマ設定を維持する」オプション
+### 更新時の「テーマ設定を維持する」オプション
 
 [変更をリリースする](#変更をリリースする) というステップのところで、「GitHub から更新」を選んだ際のダイアログに「テーマ設定を維持する」というオプションがありました。
 
@@ -238,7 +238,7 @@ _例：style.css を編集してボタンの色を変える_
 
 また、デフォルトでチェックボックスは ON になっている、すなわち **`manifest.json` の値を反映 "しない" 挙動になっている**ことも注意です。
 
-## ZCLI でテーマを更新できないの？
+### ZCLI でテーマを更新できないの？
 
 手順では最後のリリースのステップを画面上から行っていましたが、実は ZCLI にもテーマの更新用のコマンドが存在します。
 <https://github.com/zendesk/zcli/blob/master/docs/themes.md#zcli-themesupdate-themedirectory>
@@ -261,7 +261,7 @@ Creating theme update job... !
 
 ![](https://storage.googleapis.com/zenn-user-upload/83b514ffe9aa-20240403.png =350x)
 
-# 参考リンク
+## 参考リンク
 
 - [GitHub インテグレーションを使用した Guide テーマの設定 – Zendesk ヘルプ](https://support.zendesk.com/hc/ja/articles/4408832476698-GitHub%E3%82%A4%E3%83%B3%E3%83%86%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E4%BD%BF%E7%94%A8%E3%81%97%E3%81%9FGuide%E3%83%86%E3%83%BC%E3%83%9E%E3%81%AE%E8%A8%AD%E5%AE%9A)
 - [Guide における GitHub の管理対象のテーマの更新方法 – Zendesk ヘルプ](https://support.zendesk.com/hc/ja/articles/4408844123162-Guide%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8BGitHub%E3%81%AE%E7%AE%A1%E7%90%86%E5%AF%BE%E8%B1%A1%E3%81%AE%E3%83%86%E3%83%BC%E3%83%9E%E3%81%AE%E6%9B%B4%E6%96%B0%E6%96%B9%E6%B3%95)
