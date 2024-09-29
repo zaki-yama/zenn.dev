@@ -17,19 +17,21 @@ CRE（Customer Reliability Engineer）の山﨑（[@zaki\_\_\_yama](https://twit
 
 ## はじめに
 
-最近、日々の習慣化したい行動を[Habitify](https://www.habitify.me/ja)というアプリに記録するようにしました。
+何事も長続きしないのが悩みなのですが、最近、日々の習慣化したい行動を[Habitify](https://www.habitify.me/ja)というアプリに記録するようにしました。
 きっかけとなったのはこちらのブログ記事です。
 
 https://kakakakakku.hatenablog.com/entry/2024/07/09/183335
 
-https://kakakakakku.hatenablog.com/entry/2024/02/14/201844
-
 特に「10分間読書」という取り組みが、本を読むのが苦手な自分にとって非常に良いなと感じたこと、
-またメモに読んだ本を記録することでそのときにどんな本を読んでいたのか・どれくらいかかっていたのかを振り返れるのも良いと思い、真似させていただくことにしました。
+また読んだ本をメモに記録することでそのときにどんな本を読んでいたのか・どれくらいかかっていたのかを振り返れるのも良いと思い、真似させていただくことにしました。
 
 参考記事ではメモの集計方法も紹介されていたのですが、せっかくであればこの作業を自動化し、月ごとにSlackに流すことで振り返るきっかけになればと思い、そのような仕組みを構築しました。
 
-今回、構築には Cloudflare Workers を使いました。Cloudflare Workers を選んだのに大した理由はなく、**ずっと Cloudflare に入門したいと思ってできずにいたので手頃なお題が欲しかった**ことと、後述する Cron Triggers という機能を使えば Worker の処理を任意のタイミングで定期実行できるという情報をなんとなく知っていたからでした。
+![](https://storage.googleapis.com/zenn-user-upload/e9dcf2884986-20240930.png)
+
+![](https://storage.googleapis.com/zenn-user-upload/7408dc100311-20240930.png)
+
+また今回、構築には Cloudflare Workers を使いました。Cloudflare Workers を選んだのに大した理由はなく、**ずっと Cloudflare に入門したいと思ってできずにいたので手頃なお題が欲しかった**ことと、後述する Cron Triggers という機能を使えば Worker の処理を任意のタイミングで定期実行できるという情報をなんとなく知っていたからでした。
 
 ----------
 
@@ -62,6 +64,8 @@ http://localhost:8787 で Worker が立ち上がるので、ブラウザで開�
 まず、API を叩くための API key を取得します。
 アプリの設定画面から確認できます。
 
+![](https://storage.googleapis.com/zenn-user-upload/dbefbed9effd-20240930.png)
+
 続いて、API を叩く処理を実装します。習慣（Habits）ごとにメモ（Notes）が記録されており、それぞれを取得するAPIは分かれています。
 そのため、先に習慣の一覧を取得し、そのidを元にメモを取得していきます。
 
@@ -70,7 +74,78 @@ http://localhost:8787 で Worker が立ち上がるので、ブラウザで開�
 - 習慣（Habits）：https://docs.habitify.me/core-resources/habits
 - メモ（Notes）：https://docs.habitify.me/core-resources/notes
 
+習慣を取得する API については、特に言及するポイントはありません。
 
+```typescript
+type Habit = {
+  id: string;
+  name: string;
+};
+
+const response = await fetch("https://api.habitify.me/habits", {
+  headers: {
+    Authorization: HABITIFY_API_KEY,
+  },
+});
+const json = (await response.json()) as { data: Habit[] };
+const habits = json.data.map((data) => ({
+  id: data.id,
+  name: data.name,
+}));
+```
+
+今のところ id と name しか使わないため、それ以外は取り除いています。
+
+次に、メモを取得する API です。
+
+```typescript
+import { format } from "@formkit/tempo";
+
+type NoteCount = {
+  [note: string]: number;
+};
+
+export type NoteCountByHabit = {
+  [habitName: string]: NoteCount;
+};
+
+const today = new Date();
+// 先月1日0:00:00
+const from = new Date(today.getFullYear(), today.getMonth() - 1, 1, 0, 0, 0);
+// 先月の末日23:59:59
+const to = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
+
+const searchParams = new URLSearchParams({
+  from: format(from, "YYYY-MM-DDTHH:mm:ssZ"),
+  to: format(to, "YYYY-MM-DDTHH:mm:ssZ"),
+});
+
+const noteCountsByHabit: NoteCountByHabit = {};
+
+for (const habit of habits) {
+  const response = await fetch(
+    `https://api.habitify.me/notes/${habit.id}?${searchParams.toString()}`,
+    {
+      headers: {
+        Authorization: env.HABITIFY_API_KEY,
+      },
+    },
+  );
+  const json = (await response.json()) as { data: Note[] };
+  console.log(json);
+  const notesCount = json.data.reduce(
+    (acc: { [note: string]: number }, item) => {
+      // アイテムの content をキーにして集計
+      acc[item.content] = (acc[item.content] || 0) + 1;
+      return acc;
+    },
+    {},
+  );
+
+  console.log(notesCount);
+  noteCountsByHabit[habit.name] = notesCount;
+}
+```
 
 ## 3. Slack にポストする
 
@@ -79,7 +154,7 @@ Incoming webhooks を使用します。
 
 [Sending messages using incoming webhooks | Slack](https://api.slack.com/messaging/webhooks)
 
-また、投稿文については [Block Kit Builder](https://api.slack.com/tools/block-kit-builder) で作ったものを参考に JSON を直接組み立てていますが、もう少し凝ったフォーマットにするなら [jsx-slack](https://github.com/yhatt/jsx-slack) などのライブラリも検討しようと思います。
+また、投稿文については [Block Kit Builder](https://api.slack.com/tools/block-kit-builder) で試したものを参考に JSON を直接組み立てていますが、もう少し凝ったフォーマットにするなら [jsx-slack](https://github.com/yhatt/jsx-slack) などのライブラリも検討しようと思います。
 
 ステップ2 で集計した、習慣ごと・メモごとの回数を集計したオブジェクトを、Slack 
 
@@ -126,19 +201,27 @@ await fetch(SLACK_WEBHOOK_URL, {
 
 ## 4. Cron Triggers を設定する
 
-まず、`wrangler.toml` ファイルで、定期実行のスケジュールを設定します。例えば、毎日午前9時に実行するには以下のように記述します。
+
+まず、`wrangler.toml` ファイルで、定期実行のスケジュールを設定します。例えば、毎月1日の午前9時に実行するには以下のように記述します。
 
 ```toml
 [[triggers]]
-schedule = "0 9 * * *"
+schedule = "0 9 1 * *"
 ```
 
 ## 5. クレデンシャルは Secrets に隠す
 
+TODO
+
 ## 6. デプロイ
+
+最後に、
+
+![](https://storage.googleapis.com/zenn-user-upload/16114a7cef6b-20240930.png)
 
 ## 料金・制限事項
 
+TODO
 
 ------
 
