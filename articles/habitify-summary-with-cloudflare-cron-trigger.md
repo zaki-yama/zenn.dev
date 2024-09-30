@@ -22,16 +22,15 @@ CRE（Customer Reliability Engineer）の山﨑（[@zaki\_\_\_yama](https://twit
 
 https://kakakakakku.hatenablog.com/entry/2024/07/09/183335
 
-この記事の中で特に「10分間読書」という取り組みが、本を読むのが苦手な自分にとって非常に良さそうだなと感じたこと、また読んだ本をメモに記録することでそのときにどんな本を読んでいたのか・どれくらいかかっていたのかを振り返れるのも良いと思い、真似させていただくことにしました。
+この記事の中で特に「10 分間読書」という取り組みが、本を読むのが苦手な自分にとって非常に良さそうだなと感じたこと、また読んだ本をメモに記録することでそのときにどんな本を読んでいたのか・どれくらいかかっていたのかを振り返れるのも良いと思い、真似させていただくことにしました。
 
 ![](https://storage.googleapis.com/zenn-user-upload/d9b0986cf0fc-20240930.png)
-*左: 私のHabitify画面。目標回数や計測方法（回数なのか時間なのか）を習慣ごとに設定できる
-右: メモ機能で、どんな本を読んだのかを記録している*
+_左: 私の Habitify 画面。目標回数や計測方法（回数なのか時間なのか）を習慣ごとに設定できる
+右: メモ機能で、どんな本を読んだのかを記録している_
 
-参考記事ではメモの集計方法も紹介されていたのですが、せっかくなのでこの作業を自動化し、毎月Slackに流すことで振り返るきっかけになればと思い、そのような仕組みを構築しました。
+参考記事ではメモの集計方法も紹介されていたのですが、せっかくなのでこの作業を自動化し、毎月 Slack に流すことで振り返るきっかけになればと思い、そのような仕組みを構築しました。
 
-また今回、構築には [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/workers/) を使いました。Cloudflare Workers を選んだ理由としては、**ずっと触ってみたいと思っていたので何かきっかけが欲しかった**（だいじ）ことと、後述する**Cron Triggers という機能を使えば Worker の処理を任意のタイミングで定期実行できる**という情報がなんとなく記憶にあったからでした。
-
+また今回、構築には [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/workers/) を使いました。Cloudflare Workers を選んだ理由としては、**ずっと Cloudflare を触ってみたいと思っていたので何かきっかけが欲しかった**（重要）ことと、後述する**Cron Triggers という機能を使えば Worker の処理を任意のタイミングで定期実行できる**という情報がなんとなく記憶にあったからでした。
 
 ## 今回作ったもの
 
@@ -40,7 +39,6 @@ https://kakakakakku.hatenablog.com/entry/2024/07/09/183335
 上述した Habitify の習慣メモを集計し、Slack に投稿する Bot です。
 
 それでは、ここから実際に構築した内容について詳しく説明していきます。
-
 
 ## 1. Cloudflare Workers のプロジェクト作成
 
@@ -57,7 +55,6 @@ $ npm run start
 http://localhost:8787 で Worker が立ち上がるので、ブラウザで開くか、curl などのコマンドでアクセスします。
 以降も、コードを修正しながら上記 URL にアクセスして動作を確認していきます。
 
-
 ## 2. Habitify API を使い、習慣データを取得する
 
 まず、API を利用するための API key を取得します。
@@ -65,8 +62,8 @@ http://localhost:8787 で Worker が立ち上がるので、ブラウザで開�
 
 ![](https://storage.googleapis.com/zenn-user-upload/dbefbed9effd-20240930.png =300x)
 
-続いて、API を利用してデータを取得する処理を実装します。習慣（Habits）ごとにメモ（Notes）が記録されており、それぞれを取得するAPIは分かれています。
-そのため、先に習慣の一覧を取得し、そのidを元にメモを取得していきます。
+続いて、API を利用してデータを取得する処理を実装します。習慣（Habits）ごとにメモ（Notes）が記録されており、それぞれを取得する API は分かれています。
+そのため、先に習慣の一覧を取得し、その id を元にメモを取得していきます。
 
 それぞれの API ドキュメントは以下の通りです。
 
@@ -130,7 +127,7 @@ for (const habit of habits) {
       headers: {
         Authorization: env.HABITIFY_API_KEY,
       },
-    },
+    }
   );
   const json = (await response.json()) as { data: Note[] };
   console.log(json);
@@ -140,7 +137,7 @@ for (const habit of habits) {
       acc[item.content] = (acc[item.content] || 0) + 1;
       return acc;
     },
-    {},
+    {}
   );
 
   console.log(notesCount);
@@ -217,19 +214,19 @@ const body = JSON.stringify({ blocks });
 await fetch(SLACK_WEBHOOK_URL, {
   method: "POST",
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   },
-  body: JSON.stringify(message)
+  body: JSON.stringify(message),
 });
 ```
 
 ## 4. Cron Triggers を設定する
 
-ここまでで必要な処理は一通り完成しました。次は、これらを自動的に定期実行するために、Cron Triggersを設定していきます。
+ここまでで必要な処理は一通り完成しました。次は、これらを自動的に定期実行するために、Cron Triggers を設定していきます。
 
 https://developers.cloudflare.com/workers/configuration/cron-triggers/
 
-まず、`wrangler.toml` ファイルで、定期実行のスケジュールを設定します。例えば、毎月1日の午前9時に実行するには以下のように記述します。
+まず、`wrangler.toml` ファイルで、定期実行のスケジュールを設定します。例えば、毎月 1 日の午前 9 時に実行するには以下のように記述します。
 
 ```toml
 [[triggers]]
@@ -262,9 +259,7 @@ export default {
 $ npx wrangler dev --test-scheduled
 ```
 
-また、アクセスする URL は
-http:localhost:8787/__scheduled
-というように末尾に `__scheduled` をつける必要があります。
+また、アクセスする URL は http://localhost:8787/\_\_scheduled というように末尾に `__scheduled` をつける必要があります。
 
 ## 5. （optional）クレデンシャルは Secrets に格納する
 
@@ -321,6 +316,6 @@ TODO: free アカウントの制限事項を記載したい。
 ## おわりに
 
 Habitify に日々記録している習慣メモを毎月 Slack に流す仕組みを、Cloudflare Workers の Cron Triggers を使って実現しました。
-Cloudflare Workers も Cron Triggers も初めて使ってみましたが、全くハマりどころなく実装できてしまったので技術的には面白みのない中身になってしまいました😅
+Cloudflare Workers も Cron Triggers も初めて使ってみましたが、全くハマりどころなく実装できてしまったので技術的には面白みのない中身になってしまいました 😅
 
 ちょっとした処理を定期実行するための手段として、Cron Triggers は非常に使い勝手が良いなと思いました！
