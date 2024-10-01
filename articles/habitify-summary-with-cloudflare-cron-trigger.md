@@ -13,32 +13,35 @@ published: false
 :::
 
 CRE（Customer Reliability Engineer）の山﨑（[@zaki\_\_\_yama](https://twitter.com/zaki___yama)）です。
-今回は業務と全く関係ないプライベートで作ったものの話です。
+今回は業務と全く関係ない話です。
 
 ## はじめに
 
-何事も長続きしないのが悩みなのですが、最近、日々の習慣化したい行動を[Habitify](https://www.habitify.me/ja)というアプリに記録するようにしました。
+何事も長続きしないのが悩みなのですが、最近、日々の習慣化したい行動を [Habitify](https://www.habitify.me/ja) というアプリで記録するようにしました。
 きっかけとなったのはこちらのブログ記事です。
 
 https://kakakakakku.hatenablog.com/entry/2024/07/09/183335
 
-この記事の中で特に「10 分間読書」という取り組みが、本を読むのが苦手な自分にとって非常に良さそうだなと感じたこと、また読んだ本をメモに記録することでそのときにどんな本を読んでいたのか・どれくらいかかっていたのかを振り返れるのも良いと思い、真似させていただくことにしました。
+アプリ自体も便利そうですが、特に「10 分間読書」という取り組みが本を読むのが苦手な自分にとって非常に良さそうだなと感じたこと、また読んだ本をメモに記録することでそのときにどんな本を読んでいたのか・どれくらいかかっていたのかを振り返れるのも良いと思い、真似させていただくことにしました。
 
 ![](https://storage.googleapis.com/zenn-user-upload/d9b0986cf0fc-20240930.png)
-_左: 私の Habitify 画面。目標回数や計測方法（回数なのか時間なのか）を習慣ごとに設定できる
-右: メモ機能で、どんな本を読んだのかを記録している_
+*左: 私の Habitify 画面。目標回数や計測方法（回数なのか時間なのか）を習慣ごとに設定できる
+右: メモ機能で、どんな本を読んだのかを記録している*
 
 参考記事ではメモの集計方法も紹介されていたのですが、せっかくなのでこの作業を自動化し、毎月 Slack に流すことで振り返るきっかけになればと思い、そのような仕組みを構築しました。
 
-また今回、構築には [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/workers/) を使いました。Cloudflare Workers を選んだ理由としては、**ずっと Cloudflare を触ってみたいと思っていたので何かきっかけが欲しかった**（重要）ことと、後述する**Cron Triggers という機能を使えば Worker の処理を任意のタイミングで定期実行できる**という情報がなんとなく記憶にあったからでした。
+また今回、構築には [Cloudflare Workers](https://www.cloudflare.com/ja-jp/developer-platform/workers/) を使いました。Cloudflare Workers を選んだ理由としては、単に**ずっと Cloudflare を触ってみたいと思っていたので何かきっかけが欲しかった**というのが大きいのですが、加えて後述する**Cron Triggers という機能を使えば Worker の処理を任意のタイミングで定期実行できる**という情報がなんとなく記憶にあったからでした。
 
 ## 今回作ったもの
 
-![](https://storage.googleapis.com/zenn-user-upload/cedb2212cbd5-20240930.png)
+![](https://storage.googleapis.com/zenn-user-upload/3ce6d473da70-20241001.png)
 
 上述した Habitify の習慣メモを集計し、Slack に投稿する Bot です。
+コードはこちらのリポジトリにあります。
 
-それでは、ここから実際に構築した内容について詳しく説明していきます。
+https://github.com/zaki-yama-labs/habitify-summary-with-cloudflare-cron-trigger
+
+ここから実際に構築した内容について詳しく説明していきます。
 
 ## 1. Cloudflare Workers のプロジェクト作成
 
@@ -65,7 +68,7 @@ http://localhost:8787 で Worker が立ち上がるので、ブラウザで開�
 続いて、API を利用してデータを取得する処理を実装します。習慣（Habits）ごとにメモ（Notes）が記録されており、それぞれを取得する API は分かれています。
 そのため、先に習慣の一覧を取得し、その id を元にメモを取得していきます。
 
-それぞれの API ドキュメントは以下の通りです。
+それぞれの API ドキュメントは次の通りです。
 
 - 習慣（Habits）：https://docs.habitify.me/core-resources/habits
 - メモ（Notes）：https://docs.habitify.me/core-resources/notes
@@ -226,12 +229,14 @@ await fetch(SLACK_WEBHOOK_URL, {
 
 https://developers.cloudflare.com/workers/configuration/cron-triggers/
 
-まず、`wrangler.toml` ファイルで、定期実行のスケジュールを設定します。例えば、毎月 1 日の午前 9 時に実行するには以下のように記述します。
+まず、`wrangler.toml` ファイルで、定期実行のスケジュールを設定します。例えば、毎月 1 日の日本時間（JTC）午前 9 時に実行するには次のように記述します。
 
 ```toml
 [[triggers]]
-schedule = "0 9 1 * *"
+schedule = "0 0 1 * *"
 ```
+
+（UTC で指定するため、2 つ目の値は `0` としています）
 
 次に、Worker のコードを微修正します。
 元々プロジェクトを作成したときは `fetch()` という関数内に処理を記述していましたが、Cron Trigger から呼び出されるのは `scheduled()` という関数になります。
@@ -309,9 +314,19 @@ $ npm run deploy
 
 ![](https://storage.googleapis.com/zenn-user-upload/16114a7cef6b-20240930.png)
 
-## 制限事項
+## 料金・制限事項
 
-TODO: free アカウントの制限事項を記載したい。
+Habitify の API は Free プランでも利用できます。
+また、Cloudflare の Free プランの各種上限は次の通りです。
+
+- 登録可能な Cron Triggers の数: 5 個まで
+- Worker 1 回あたりの処理時間（CPU time）: 10ms まで
+- Worker の実行回数: 100,000 requests/day または 1000 requests/min
+
+参考：[Limits | Cloudflare Workers docs](https://developers.cloudflare.com/workers/platform/limits)
+
+そのため、今回のような月に一度実行するぐらいであれば、Free プランで実現可能です。
+（CPU time だけ気をつけなければいけませんが。習慣データが増えすぎるとだめかも）
 
 ## おわりに
 
