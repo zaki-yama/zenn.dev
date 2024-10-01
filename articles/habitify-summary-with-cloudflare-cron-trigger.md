@@ -312,7 +312,7 @@ $ npm run deploy
 
 デプロイ後に Cron が期待通り設定されているかどうかは、Worker の設定画面 > トリガーイベント　で確認できます。
 
-![](https://storage.googleapis.com/zenn-user-upload/16114a7cef6b-20240930.png)
+![](https://storage.googleapis.com/zenn-user-upload/dc1e6fb1871d-20241001.png)
 
 ## 料金・制限事項
 
