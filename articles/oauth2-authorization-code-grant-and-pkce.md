@@ -39,6 +39,9 @@ OAuth 2.0 のフローをシーケンス図で説明したWeb上の記事や書�
 
 ![](https://storage.googleapis.com/zenn-user-upload/zgdvnxray0tvf15knewqg0ztbfmp)
 
+（画像が小さい場合は https://github.com/zaki-yama/zenn.dev/blob/master/articles/images/oauth2-authorization-code-grant-and-pkce/authorization-code-flow.png を参照してください）
+
+
 以下、この図の説明です。
 フロー開始から認可コードを取得するまでの流れを見ていきます。
 ## 0. クライアント登録
@@ -267,6 +270,9 @@ Pragma: no-cache
 ここまで見てきた認可コードフローにPKCEも含めたシーケンス図がこちらです。
 
 ![](https://storage.googleapis.com/zenn-user-upload/g70494a7cajzdcqufi5amuty9uwo)
+
+
+（画像が小さい場合は https://github.com/zaki-yama/zenn.dev/blob/master/articles/images/oauth2-authorization-code-grant-and-pkce/authorization-code-flow-pkce.png を参照してください）
 
 赤字部分が PKCE によって追加された処理です。それ以外はここまで説明した内容と変わらないため、以下ではこの赤字部分のみ説明します。
 
