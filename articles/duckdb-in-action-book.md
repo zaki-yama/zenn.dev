@@ -1,5 +1,5 @@
 ---
-title: "無料の書籍「DuckDB in Action」でDuckDBに入門する"
+title: "「DuckDB in Action」でDuckDBに入門した"
 emoji: "🦆"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["duckdb"]
@@ -7,11 +7,12 @@ publication_name: "loglass"
 published: false
 ---
 
+![](https://storage.googleapis.com/zenn-user-upload/bd39bda997ad-20241221.png)
+
 :::message
 この記事は **[株式会社ログラス Productチーム Advent Calendar 2024](https://qiita.com/advent-calendar/2024/loglass)** のシリーズ 1、**22日目** の記事です。
 :::
 
-![](https://storage.googleapis.com/zenn-user-upload/33fa54dd0259-20241220.png)
 
 こんにちは。
 株式会社ログラスで CRE をやっている山﨑（[@zaki\_\_\_yama](https://twitter.com/zaki___yama)）と申します。
@@ -19,7 +20,10 @@ published: false
 毎年アドベントカレンダーの季節になると、「これを機に今まで気になっていたことを調べてみよう」という気持ちになります。
 今年はここ数ヶ月社内外で耳にすることの多かった「DuckDB」をテーマに選びました。
 
-また、DuckDB の何を学ぶべきかと考えていたとき、ふと「DuckDB in Action という無料で読める書籍があるらしい」という話をどこかで聞いたのを思い出しました。ちょうどいい機会だと思い、実際に読んでみることにしました。
+また、DuckDB の何を学ぶべきかと考えていたとき、ふと
+「DuckDB in Action という無料で読める書籍があるらしい」
+という話をどこかで聞いたのを思い出しました。
+ちょうどいい機会だと思い、実際に読んでみることにしました。
 
 本記事では、この書籍を通して学べることや読んでみた感想をご紹介します。
 
@@ -117,7 +121,7 @@ TO 'atp_rankings.parquet'
 - `REPLACE` を使い、文字列型と認識されている日付関連の列を DATE 型に変換する
 - `FROM 'atp/atp_rankings_*.csv'` という正規表現を使うことで、複数の CSV ファイルをマージして 1 つの Parquet ファイルを生成する
 
-と言った処理を行っています。
+といった処理を行っています。
 
 また後半はさらに多様なデータ形式の一例として、SQLite や Excel ファイルの扱いについても述べられています。（ここはあまり読んでないですが）
 
@@ -136,7 +140,7 @@ DuckDB に対する予備知識なしで読み始めましたが、手元で実�
 
 また、各章の独立性が高いので、具体例の中でも気になったものだけかいつまんで読むのも良いと思います。
 
-唯一の難点が英語であることでしたが、書籍が PDF 形式で取得できるおかげで NotebookLM や ChatGPT に助けてもらいながら読み進めることができました。
+唯一の難点が英語であることでしたが、書籍が PDF 形式で入手できるおかげで NotebookLM や ChatGPT に助けてもらいながら読み進めることができました。
 良い時代になりました。
 
 個人的には、本書では触れられなかった [DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html) を使ってブラウザでも動かせるというのが気になっています。
