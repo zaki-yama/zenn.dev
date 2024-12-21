@@ -4,7 +4,7 @@ emoji: "🦆"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["duckdb"]
 publication_name: "loglass"
-published: false
+published: true
 ---
 
 ![](https://storage.googleapis.com/zenn-user-upload/bd39bda997ad-20241221.png)
@@ -78,6 +78,8 @@ FROM 'https://github.com/bnokoro/Data-Science/raw/master/'
       'countries%20of%20the%20world.csv';
 ```
 
+（「2.5 Analyzing a CSV file with the DuckDB CLI」より引用）
+
 CSV ファイル、かつローカルではなく Web 上に存在するデータソースに対してのクエリになっています。
 DuckDB の特長である、多様なデータ形式（CSV、JSON、Parquet）をサポートしている点や、ローカルだけでなくオンラインのデータや S3 などのクラウドストレージにもアクセスできる点が現れているなと感じました。
 
@@ -117,6 +119,8 @@ COPY (
 TO 'atp_rankings.parquet'
 (FORMAT PARQUET, CODEC 'SNAPPY', ROW_GROUP_SIZE 100000);
 ```
+
+（「5.4 Translating CSV to Parquet」より引用）
 
 - `REPLACE` を使い、文字列型と認識されている日付関連の列を DATE 型に変換する
 - `FROM 'atp/atp_rankings_*.csv'` という正規表現を使うことで、複数の CSV ファイルをマージして 1 つの Parquet ファイルを生成する
