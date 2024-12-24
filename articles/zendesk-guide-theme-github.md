@@ -2,13 +2,13 @@
 title: "Zendesk GuideのテーマをGitHubで管理する"
 emoji: "🛠️"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["zendesk"]
+topics: ["zendesk", "lgtechblogsprint"]
 publication_name: "loglass"
 published: true
 ---
 
 :::message
-この記事は[毎週必ず記事がでるテックブログ "Loglass Tech Blog Sprint"](https://zenn.dev/loglass/articles/7298a3cd4c5fc6) の **33 週目**の記事です！
+この記事は毎週必ず記事がでるテックブログ [Loglass Tech Blog Sprint](https://zenn.dev/topics/lgtechblogsprint) の **33 週目**の記事です！
 1 年間連続達成まで **残り 20 週** となりました！
 :::
 

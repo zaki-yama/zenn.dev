@@ -2,13 +2,13 @@
 title: "Cloudflare WorkersのCron TriggersでHabitifyの習慣記録を定期的にSlackに流す"
 emoji: "🛠️"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["cloudflare", "habitify", "slack"]
+topics: ["cloudflare", "habitify", "slack", "lgtechblogsprint"]
 publication_name: "loglass"
 published: true
 ---
 
 :::message
-この記事は[毎週必ず記事がでるテックブログ "Loglass Tech Blog Sprint"](https://zenn.dev/loglass/articles/7298a3cd4c5fc6) の **59 週目**の記事です！
+この記事は毎週必ず記事がでるテックブログ [Loglass Tech Blog Sprint](https://zenn.dev/topics/lgtechblogsprint) の **59 週目**の記事です！
 2 年間連続達成まで **残り 47 週** となりました！
 :::
 
