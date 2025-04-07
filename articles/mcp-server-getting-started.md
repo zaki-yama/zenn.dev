@@ -6,177 +6,275 @@ topics: ["mcp", "cursor"]
 published: false
 ---
 
-# はじめに
+## はじめに
 
-MCP（Model Context Protocol）は、LLM（Large Language Model）がローカル環境のデータやサービスにアクセスするための標準プロトコルです。
-このプロトコルを使うことで、LLMはローカル環境のファイルやデータベース、APIなどを安全に利用できるようになります。
+すでに日本語でも紹介記事が多数ありますが、私もMCP（Model Context Protocol）サーバーの開発を試してみたので備忘録として。
 
-本記事では、MCPサーバーを自作する方法について解説します。
-MCPサーバーを自作することで、LLMに独自の機能を提供したり、ローカル環境のデータを活用した対話を実現したりすることができます。
+MCPサーバー開発用のSDKは Python/TypeScript/Java/Kotlin版が提供されていますが、本記事ではTypeScript SDKを使用します。
+また実装したMCPサーバーを利用するMCPホストにはCursorを使用します。
 
-## ブログ目次
+基本的に公式ドキュメントを参考にしています。
 
-- はじめに
-- MCPの構成
-- MCPのホスト
-    - Claude Desktop
-    - Cursor
-- MCPサーバーの実装
-- MCPサーバーの配布
-- デバッグ
-    - Inspector
-    - Logging
-- 余談：サーバーの実装をLLMに手伝ってもらう
-    - [Building MCP with LLMs - Model Context Protocol](https://modelcontextprotocol.io/tutorials/building-mcp-with-llms)
-- Cursorで動かす
+https://modelcontextprotocol.io/
 
-# MCPの構成
+本記事で触れること
 
-MCPは以下のような構成要素で成り立っています。
+- TypeScript SDKを用いたMCPサーバーの実装方法
+- 実装したMCPサーバーの配布(Publish)方法
+- 実装したMCPサーバーをCursorに組み込んで使用する方法
+- デバッグ方法：Inspector の使い方、ロギング
 
-## MCP Hosts
+本記事では触れないこと
 
-MCP Hostsは、LLMを実行するプログラムです。具体的には以下のようなものが該当します：
+- MCPのアーキテクチャ
+- MCPの通信の仕組み
 
-- Claude Desktop
-- Cursor
-- その他のAIツール
-
-これらのプログラムは、MCPを通じてローカル環境のデータやサービスにアクセスしたいと考えています。
-
-## MCP Clients
-
-MCP Clientsは、MCP HostsとMCP Serversの間の通信を担当するプロトコルクライアントです。
-1対1の接続を維持し、MCP HostsからのリクエストをMCP Serversに転送します。
-
-## MCP Servers
-
-MCP Serversは、ローカル環境のデータやサービスにアクセスするための軽量なプログラムです。
-標準化されたModel Context Protocolを通じて、特定の機能を提供します。
-
-## Local Data Sources
-
-Local Data Sourcesは、MCP Serversがアクセスできるローカル環境のデータやサービスです。具体的には：
-
-- ファイル
-- データベース
-- その他のローカルサービス
-
-## Remote Services
-
-Remote Servicesは、インターネットを通じて利用可能な外部システムです。
-MCP Serversは、APIなどを通じてこれらのサービスに接続することができます。
-
-# MCPのホスト
-
-MCPのホストとして、現在主に2つのプログラムが利用されています。
-
-## Claude Desktop
-
-Claude Desktopは、Anthropicが提供するデスクトップアプリケーションです。
-Claude 3.5 Sonnetをローカル環境で実行し、MCPを通じてローカル環境のデータやサービスにアクセスすることができます。
-
-Claude DesktopでMCPサーバーを利用するには、以下の手順が必要です：
-
-1. Claude Desktopをインストールする
-2. MCPサーバーをインストールする
-3. Claude Desktopの設定でMCPサーバーを有効にする
-
-## Cursor
-
-Cursorは、AIを活用したコードエディタです。
-MCPを通じて、ローカル環境のファイルやデータベース、APIなどにアクセスすることができます。
-
-CursorでMCPサーバーを利用するには、以下の手順が必要です：
-
-1. Cursorをインストールする
-2. MCPサーバーをインストールする
-3. Cursorの設定でMCPサーバーを有効にする
-
-Cursorでは、プロジェクトごとまたはグローバルにMCPサーバーを設定することができます。
-プロジェクトごとの設定は `<project_root>/.cursor.mcp.json`、グローバルな設定は `~/.cursor/mcp.json` に記述します。
-
-# MCPサーバーの実装
+## MCPサーバーの実装
 
 MCPサーバーを実装するには、以下のような手順で進めていきます。
 
-## 1. 開発環境のセットアップ
+### 1. 開発環境のセットアップ
 
 まず、MCPサーバーを開発するための環境をセットアップします。
 MCPサーバーは様々な言語で実装できますが、ここでは[TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)を使用した例を示します。
 
-まずは、
+まずは、プロジェクトを作成し必要なライブラリをインストールします。
+
 ```bash
-# プロジェクトの作成
 mkdir mcp-server-example
 cd mcp-server-example
 
-# 依存関係のインストール
 npm init -y
-npm install @modelcontextprotocol/typescript-sdk typescript ts-node @types/node
+npm install @modelcontextprotocol/sdk zod
+npm install -D @types/node typescript
 ```
 
-## 2. 基本的なサーバーの実装
+`package.json` を修正し、 `type: "module"` を指定します。
+また `build` スクリプトなどを定義します。
+
+```json
+{
+  "type": "module",
+  "bin": {
+    "my-mcp-server": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod 755 build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+}
+```
+
+`tsconfig.json` を作成します。
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "outDir": "./build",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
+```
+
+### 2. 基本的なサーバーの実装
 
 MCPサーバーの基本的な実装例を示します。
+ここでは公式ドキュメントの [Quickstart > For Server Developers](https://modelcontextprotocol.io/quickstart/server) を簡略化したものを実装します。
 
 ```typescript
-import { Server } from "@modelcontextprotocol/typescript-sdk";
+#!/usr/bin/env node
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
 
-const server = new Server(
-  {
-    name: "example-server",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      resources: {},
-      tools: {},
-      prompts: {},
-    },
+const NWS_API_BASE = "https://api.weather.gov";
+const USER_AGENT = "weather-app/1.0";
+
+// Create server instance
+const server = new McpServer({
+  name: "weather",
+  version: "1.0.0",
+});
+
+// Helper function for making NWS API requests
+async function makeNWSRequest<T>(url: string): Promise<T | null> {
+  const headers = {
+    "User-Agent": USER_AGENT,
+    Accept: "application/geo+json",
+  };
+
+  try {
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return (await response.json()) as T;
+  } catch (error) {
+    console.error("Error making NEW request:", error);
+    return null;
   }
+}
+
+interface AlertFeature {
+  properties: {
+    event?: string;
+    areaDesc?: string;
+    severity?: string;
+    status?: string;
+    headline?: string;
+  };
+}
+
+// Format alert data
+function formatAlert(feature: AlertFeature): string {
+  const props = feature.properties;
+  return [
+    `Event: ${props.event || "Unknown"}`,
+    `Area: ${props.areaDesc || "Unknown"}`,
+    `Severity: ${props.severity || "Unknown"}`,
+    `Status: ${props.status || "Unknown"}`,
+    `Headline: ${props.headline || "No headline"}`,
+    "---",
+  ].join("\n");
+}
+
+interface ForecastPeriod {
+  name?: string;
+  temperature?: number;
+  temperatureUnit?: string;
+  windSpeed?: string;
+  windDirection?: string;
+  shortForecast?: string;
+}
+
+interface PointsResponse {
+  properties: {
+    forecast?: string;
+  };
+}
+
+interface ForecastResponse {
+  properties: {
+    periods: ForecastPeriod[];
+  };
+}
+
+server.tool(
+  "get-forecast",
+  "Get weather forecast for a location",
+  {
+    latitude: z.number().min(-90).max(90).describe("Latitude of the location"),
+    longitude: z
+      .number()
+      .min(-180)
+      .max(180)
+      .describe("Longitude of the location"),
+  },
+  async ({ latitude, longitude }) => {
+    // Get grid point data
+    const pointsUrl = `${NWS_API_BASE}/points/${latitude.toFixed(4)},${longitude.toFixed(4)}`;
+    const pointsData = await makeNWSRequest<PointsResponse>(pointsUrl);
+
+    if (!pointsData) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Failed to retrieve grid point data for coordinates: ${latitude}, ${longitude}. This location may not be supported by the NWS API (only US locations are supported).`,
+          },
+        ],
+      };
+    }
+
+    const forecastUrl = pointsData.properties?.forecast;
+    if (!forecastUrl) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "Failed to get forecast URL from grid point data",
+          },
+        ],
+      };
+    }
+
+    // Get forecast data
+    const forecastData = await makeNWSRequest<ForecastResponse>(forecastUrl);
+    if (!forecastData) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "Failed to retrieve forecast data",
+          },
+        ],
+      };
+    }
+
+    const periods = forecastData.properties?.periods || [];
+    if (periods.length === 0) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "No forecast periods available",
+          },
+        ],
+      };
+    }
+
+    // Format forecast periods
+    const formattedForecast = periods.map((period: ForecastPeriod) =>
+      [
+        `${period.name || "Unknown"}:`,
+        `Temperature: ${period.temperature || "Unknown"}°${period.temperatureUnit || "F"}`,
+        `Wind: ${period.windSpeed || "Unknown"} ${period.windDirection || ""}`,
+        `${period.shortForecast || "No forecast available"}`,
+        "---",
+      ].join("\n"),
+    );
+
+    const forecastText = `Forecast for ${latitude}, ${longitude}:\n\n${formattedForecast.join("\n")}`;
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: forecastText,
+        },
+      ],
+    };
+  },
 );
 
-// リソースの定義
-server.addResource({
-  name: "example",
-  content: "Hello, MCP!",
-});
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("Weather MCP Server running on stdio");
+}
 
-// ツールの定義
-server.addTool({
-  name: "echo",
-  description: "Echoes back the input",
-  parameters: {
-    type: "object",
-    properties: {
-      message: {
-        type: "string",
-        description: "The message to echo",
-      },
-    },
-    required: ["message"],
-  },
-  handler: async (params) => {
-    return { result: params.message };
-  },
+main().catch((error) => {
+  console.error("Fatal error in main():", error);
+  process.exit(1);
 });
-
-// プロンプトの定義
-server.addPrompt({
-  name: "example",
-  content: "You are a helpful assistant.",
-});
-
-// サーバーの起動
-server.start();
 ```
 
 ## 3. サーバーの機能
 
 MCPサーバーは以下の3つの主要な機能を提供できます：
 
-### Resources
+- Resources
 
 Resourcesは、クライアントが読み取れるファイルライクなデータです。
 APIレスポンスやファイルの内容などが該当します。
@@ -306,6 +404,11 @@ Loggingを使用するには、以下の手順で行います：
 - デバッガーを使用する
 - テストを書く
 - モニタリングツールを使用する
+
+## Cursor へのインストール方法
+
+Cursorでは、プロジェクトごとまたはグローバルにMCPサーバーを設定することができます。
+プロジェクトごとの設定は `<project_root>/.cursor/mcp.json`、グローバルな設定は `~/.cursor/mcp.json` に記述します。
 
 # Cursorで動かす
 
