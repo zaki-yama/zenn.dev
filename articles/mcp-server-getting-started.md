@@ -3,7 +3,7 @@ title: "MCPサーバー自作入門"
 emoji: "🛠️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["mcp", "cursor"]
-published: false
+published: true
 ---
 
 ## はじめに
